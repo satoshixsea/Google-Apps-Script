@@ -1,0 +1,36 @@
+function doGet() {
+  //var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication().setTitle("Show keyCode");
+  var panel=app.setWidth(240).setHeight(240).createVerticalPanel().setStyleAttribute('marginLeft','20px').setStyleAttribute('marginTop','20px');
+  
+  var width1=90;
+  var height1=90;
+  var fontsize1='30pt'
+  var fontsize2='12pt'
+  
+  var label1=app.createLabel().setText("code").setId('label1_id').setStyleAttribute('font-size',fontsize1);
+  var textbox1=app.createTextBox().setWidth(width1).setHeight(height1).setName('textbox1_name').setId('textbox1_id').setStyleAttribute('font-size',fontsize1);
+  var label2=app.createLabel().setText("Type any key in the textarea to show the code above.").setId('label2_id').setStyleAttribute('font-size',fontsize2);  
+
+  app.getElementById('textbox1_id').setCursorPos(0);
+
+  textbox1.addKeyUpHandler(app.createServerHandler('keyup_fnc')
+          .addCallbackElement(panel));  
+  
+  panel.add(label1);
+  panel.add(textbox1);
+  panel.add(label2);
+  app.add(panel);
+  //ss.show(app);
+  return app;
+}
+
+
+function keyup_fnc(e){
+var app=UiApp.getActiveApplication();
+var parameter = e.parameter;
+var keycode = parameter.keyCode;
+app.getElementById('label1_id').setText(keycode);
+
+return app;
+}
