@@ -1,4 +1,10 @@
-Google-Apps-Script
-==================
+Google Apps Script
+==========
+Google Apps script samples.
 
-Google Apps Script Samples.
+https://developers.google.com/apps-script/
+
+
+Using the UI Service without GUI builder.
+
+https://developers.google.com/apps-script/reference/ui/?hl=ja
