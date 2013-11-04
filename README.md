@@ -1,6 +1,6 @@
 Google Apps Script
 ==========
-Google Apps script samples.
+Google Apps script.
 
 https://developers.google.com/apps-script/
 
