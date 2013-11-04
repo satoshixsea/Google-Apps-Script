@@ -1,0 +1,8 @@
+function myFunction() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication().setTitle("UiApp");
+  var panel=app.createVerticalPanel();
+
+  app.add(panel);
+  ss.show(app);
+}
