@@ -1,0 +1,12 @@
+function myFunction() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication().setTitle("Label");
+  var panel=app.createVerticalPanel();
+
+  var label=app.createLabel("LABEL");
+
+  panel.add(label);
+
+  app.add(panel);
+  ss.show(app);
+}
