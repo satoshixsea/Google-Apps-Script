@@ -1,0 +1,27 @@
+function myFunction() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication().setTitle("TextArea");
+  var panel=app.createVerticalPanel();
+
+  var textarea=app.createTextArea().setName('textarea_name');
+  
+  var button=app.createButton("BUTTON");
+  
+  var handler=app.createServerHandler('input_fnc')
+  handler.addCallbackElement(panel);
+  button.addClickHandler(handler);
+  
+  panel.add(textarea);
+  panel.add(button);
+  app.add(panel);
+  ss.show(app);
+}
+
+
+function input_fnc(e){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.getActiveApplication();
+  var activecell=ss.getActiveCell();
+  
+  activecell.setValue(e.parameter.textarea_name);
+}
