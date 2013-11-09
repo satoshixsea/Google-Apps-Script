@@ -1,0 +1,27 @@
+function myFunction() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication().setTitle("Button");
+  var panel=app.createVerticalPanel();
+
+  var label=app.createLabel("LABEL").setId('label_Id');
+  
+  var button=app.createButton("BUTTON");
+  
+  var handler=app.createServerClickHandler('input_fnc')
+  handler.addCallbackElement(panel);
+  button.addClickHandler(handler);
+  
+  panel.add(label);
+  panel.add(button);
+  app.add(panel);
+  ss.show(app);
+}
+
+
+function input_fnc(){
+  var app=UiApp.getActiveApplication();
+
+  app.getElementById('label_Id').setText("BUTTON clicked");
+  
+  return app;
+}
