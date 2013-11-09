@@ -1,0 +1,49 @@
+function myFunction() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication().setTitle("CheckBox");
+  var panel=app.createVerticalPanel();
+
+  var check1=app.createCheckBox("CHECK1").setName('check1_name');
+  var check2=app.createCheckBox("CHECK2").setName('check2_name');
+  var check3=app.createCheckBox("CHECK3").setName('check3_name');  
+
+  var button=app.createButton("BUTTON");
+  
+  var check_handler=app.createServerHandler('check_fnc');
+  check_handler.addCallbackElement(panel);
+  button.addClickHandler(check_handler);  
+  
+  panel.add(check1);
+  panel.add(check2);
+  panel.add(check3);
+  panel.add(button);  
+  
+  app.add(panel);
+  ss.show(app);
+}
+
+
+function check_fnc(e){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.getActiveApplication();
+  var cell_B1=ss.getRange('B1');
+  var cell_B2=ss.getRange('B2');
+  var cell_B3=ss.getRange('B3');
+  
+    if(e.parameter.check1_name=="true"){
+    cell_B1.setValue("CHECH1 selected");
+    }else{
+    cell_B1.setValue("");
+    }
+    if(e.parameter.check2_name=="true"){
+    cell_B2.setValue("CHECK2 selected");
+    }else{
+    cell_B2.setValue("");
+    }
+    if(e.parameter.check3_name=="true"){
+    cell_B3.setValue("CHECK3 selected");
+    }else{
+    cell_B3.setValue("");
+    }
+  return app;
+}
