@@ -1,0 +1,29 @@
+function myFunction() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication().setTitle("RadioButton");
+  var panel=app.createVerticalPanel();
+
+  var radio1=app.createRadioButton('group1',"RADIO1").setId('radio1_id').setName('radio1_name');
+
+  var handler=app.createServerHandler('radio_fnc');
+  handler.addCallbackElement(panel);
+  radio1.addClickHandler(handler);
+
+  panel.add(radio1);
+
+  app.add(panel);
+  ss.show(app);
+}
+
+
+function radio_fnc(e){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.getActiveApplication();
+  var activecell=ss.getActiveCell();
+  
+    if(e.parameter.radio1_name=="true"){
+    activecell.setValue("RADIO1 selected");
+    app.getElementById('radio1_id').setValue(false); 
+  }
+  return app;
+}
