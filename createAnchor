@@ -1,0 +1,32 @@
+function myFunction() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication().setTitle("Anchor");
+  var panel=app.createVerticalPanel();
+
+  var anchor=app.createAnchor('text', 'href').setId('anchor_Id');
+  var load_button=app.createButton('LOAD DATA');
+  
+  var handler=app.createServerHandler('load_fnc');
+  handler.addCallbackElement(panel);
+  load_button.addClickHandler(handler);
+
+  load_fnc();
+  
+  panel.add(anchor);
+  panel.add(load_button);
+  app.add(panel);
+  ss.show(app);
+}
+
+function load_fnc(){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.getActiveApplication();
+  
+  var active_value=ss.getActiveCell().getValue();
+  var google_search="https://www.google.com/search?q="+active_value;
+
+  app.getElementById('anchor_Id').setText(active_value);
+  app.getElementById('anchor_Id').setHref(google_search); 
+  
+  return app;
+}
