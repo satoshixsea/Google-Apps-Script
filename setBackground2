@@ -1,0 +1,13 @@
+function onEdit() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var range=ss.getActiveRange();
+  var value=range.getValue();
+  var rowindex=range.getRowIndex();
+  var rowrange=ss.getRange(rowindex+":"+rowindex);
+  
+  if(value=="NO"){
+  rowrange.setBackground("pink");
+  }else{
+  rowrange.setBackground("white");
+  }
+}
