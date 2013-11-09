@@ -1,0 +1,11 @@
+function onEdit() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var cell=ss.getActiveCell();
+  var value=cell.getValue();
+ 
+  if(value=="NO"){
+  cell.setBackground("pink");
+  }else{
+  cell.setBackground("white");
+  }
+}
