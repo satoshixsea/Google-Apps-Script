@@ -1,0 +1,98 @@
+function myFunction() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication().setTitle("RadioButton");
+  var panel=app.createVerticalPanel();
+
+  var label1=app.createLabel("group1");  
+  var radio1=app.createRadioButton('group1',"RADIO1").setId('radio1_id').setName('radio1_name');
+  var radio2=app.createRadioButton('group1',"RADIO2").setId('radio2_id').setName('radio2_name');
+
+  var label2=app.createLabel("group2");  
+  var radio3=app.createRadioButton('group2',"RADIO3").setId('radio3_id').setName('radio3_name');
+  var radio4=app.createRadioButton('group2',"RADIO4").setId('radio4_id').setName('radio4_name');  
+  
+  var button=app.createButton('BUTTON');
+  
+  var radio1_handler=app.createServerHandler('radio1_fnc');
+  radio1_handler.addCallbackElement(panel);
+  radio1.addClickHandler(radio1_handler);
+
+  var radio2_handler=app.createServerHandler('radio2_fnc');
+  radio2_handler.addCallbackElement(panel);
+  radio2.addClickHandler(radio2_handler);  
+  
+  var radio3_handler=app.createServerHandler('radio3_fnc');
+  radio3_handler.addCallbackElement(panel);
+  radio3.addClickHandler(radio3_handler);  
+
+  var radio4_handler=app.createServerHandler('radio4_fnc');
+  radio4_handler.addCallbackElement(panel);
+  radio4.addClickHandler(radio4_handler);  
+  
+  var button_handler=app.createServerHandler('button_fnc');
+  button_handler.addCallbackElement(panel);
+  button.addClickHandler(button_handler);  
+
+  panel.add(label1);  
+  panel.add(radio1);
+  panel.add(radio2);
+  panel.add(label2);  
+  panel.add(radio3);
+  panel.add(radio4);
+  panel.add(button);
+
+  app.add(panel);
+  ss.show(app);
+}
+
+
+function radio1_fnc(){
+  var app=UiApp.getActiveApplication();
+  app.getElementById('radio2_id').setValue(false);   
+  return app;
+}
+
+function radio2_fnc(){
+  var app=UiApp.getActiveApplication();
+  app.getElementById('radio1_id').setValue(false); 
+  return app;
+}
+
+function radio3_fnc(){
+  var app=UiApp.getActiveApplication();
+  app.getElementById('radio4_id').setValue(false); 
+  return app;
+}
+
+function radio4_fnc(){
+  var app=UiApp.getActiveApplication();
+  app.getElementById('radio3_id').setValue(false); 
+  return app;
+}
+
+
+function button_fnc(e){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.getActiveApplication();
+  var cell_B1=ss.getRange('B1');
+  var cell_B2=ss.getRange('B2');
+  
+    if(e.parameter.radio1_name=="true"){
+    cell_B1.setValue("RADIO1 selected");
+    app.getElementById('radio2_id').setValue(false);
+
+    }else if(e.parameter.radio2_name=="true"){
+    cell_B1.setValue("RADIO2 selected");
+    app.getElementById('radio1_id').setValue(false);
+      }
+  
+    if(e.parameter.radio3_name=="true"){
+    cell_B2.setValue("RADIO3 selected");
+    app.getElementById('radio4_id').setValue(false);
+
+    }else if(e.parameter.radio4_name=="true"){
+    cell_B2.setValue("RADIO4 selected");
+    app.getElementById('radio3_id').setValue(false);
+      }
+  return app;
+}
