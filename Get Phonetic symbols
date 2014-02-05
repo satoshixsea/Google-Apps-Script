@@ -1,0 +1,176 @@
+var alcpath="http://eow.alc.co.jp/search?q=";
+var webliopath="http://ejje.weblio.jp/content/";
+var sentencearray="";//
+var split2="";
+var splitword="";
+
+function doGet() {
+  var app=UiApp.createApplication().setTitle("Phonetic symbols");
+  var panel=app.setWidth(640).setHeight(270).createVerticalPanel().setStyleAttribute('marginTop','20px').setStyleAttribute('marginLeft','20px');
+  var panelH1=app.createHorizontalPanel();
+  var panelH2=app.createHorizontalPanel();
+  var panelH3=app.createHorizontalPanel();
+  var panelV1=app.createVerticalPanel();
+  var panelV3=app.createVerticalPanel().setStyleAttribute('marginLeft','10px');
+  var panelV4=app.createVerticalPanel().setStyleAttribute('marginLeft','10px');
+  var panelS=app.createScrollPanel().setPixelSize(300, 10).setStyleAttribute('border', '2px solid gray').setStyleAttribute('marginLeft','5px').setId('panels_id');
+  
+  var width1=300;
+  var height1=200;
+  var fontsize1='13pt';
+  var label0=app.createLabel().setText("Phonetic symbols").setStyleAttribute('fontWeight', 'bold');
+  var label1=app.createLabel().setText("English(Input) ※スペースキーで単語が確定します。enter/returnキーは無効です。");
+  var textarea1=app.createTextArea().setWidth(width1).setHeight(height1).setId('textarea1_id').setName('textarea1_name').setStyleAttribute('font-size',fontsize1);
+  
+  var refreshbutton=app.createButton("Clear");
+
+for(i=0;i<50;i++){
+  var id="anchor"+i+"_id";
+  var anchor="anchor"+i; 
+  anchor=app.createAnchor('text','href').setId(id).setStyleAttribute('font-size',fontsize1);
+  anchor.setVisible(false);
+  var addanchor=anchor;
+  panelV3.add(addanchor);
+  }  
+  
+  for(i=0;i<50;i++){
+  var id="phonetic"+i+"_id";
+  var phonetic="phonetic"+i; 
+  phonetic=app.createAnchor('text','href').setId(id).setStyleAttribute('font-size',fontsize1);
+  phonetic.setVisible(false);
+  var addphonetic=phonetic;
+  panelV4.add(addphonetic);
+  }      
+
+  textarea1.addKeyUpHandler(app.createServerHandler('keyup_fnc1').addCallbackElement(panel));
+
+  var refreshhandler=app.createServerClickHandler('refresh_fnc');
+  refreshhandler.addCallbackElement(panel);
+  refreshbutton.addClickHandler(refreshhandler);
+   
+  refresh_fnc();
+  panel.add(label0);
+  panel.add(label1);
+  panel.add(panelH1);
+  panelH1.add(panelV1);
+  panelH1.add(panelS);
+  panelS.add(panelH2);
+  panelH2.add(panelV3);
+  panelH2.add(panelV4);  
+  panelV1.add(textarea1);
+  panelV1.add(panelH3);
+  panelH3.add(refreshbutton);
+  
+  app.add(panel);
+  return app;
+}
+
+function refresh_fnc(){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.getActiveApplication();
+
+  app.getElementById('textarea1_id').setCursorPos(0);
+  app.getElementById('textarea1_id').setValue("");
+  for(i=0;i<50;i++){
+  var anchorid="anchor"+i+"_id";
+  app.getElementById(anchorid).setVisible(false);
+  var phoneticid="phonetic"+i+"_id";
+  app.getElementById(phoneticid).setVisible(false);
+  }
+  return app;
+}
+
+
+function keyup_fnc1(e){
+  try{
+  var app=UiApp.getActiveApplication();
+  var parameter = e.parameter;
+  var keycode = parameter.keyCode;
+
+  if(keycode==32){
+  
+  var word=(e.parameter.textarea1_name).replace(/\?/g,"").replace(/\!/g,"").replace(/\./g,"").replace(/\,/g,"").replace(/\"/g,"").replace(/\./g,"").split(" ");
+  
+  var sentencelen=word.length-1;
+  
+  for(i=0;i<sentencelen;i++){
+  var id="anchor"+i+"_id";
+  app.getElementById(id).setText(word[i])
+                        .setHref(alcpath+word[i])
+                        .setVisible(true);
+  }
+  }
+  
+  for(i=0;i<sentencelen;i++){
+  var id="phonetic"+i+"_id";
+  var translatearray=word;
+  
+  var splitvalue0="phoneticEjjeDesc>";
+  var splitvalue="<";
+  
+  var result="";
+  var value=translatearray[i];
+  //発音記号をうまく取得できない単語があるため、ここで設定。
+  if(translatearray[i]=="the"||translatearray[i]=="The"){
+  split2="ðə";
+  }else if(translatearray[i]=="a"||translatearray[i]=="A"){
+   split2="ə";
+  }else if(translatearray[i]=="I"){
+   split2="άɪ";
+  }else if(translatearray[i]=="has"||translatearray[i]=="Has"){
+   split2="hˈæz";
+  }else if(translatearray[i]=="have"||translatearray[i]=="Have"){
+   split2="hˈæv";
+  }else if(translatearray[i]=="do"||translatearray[i]=="Do"){
+   split2="dúː";
+  }else if(translatearray[i]=="She"){
+   split2="ʃi";
+  }else if(translatearray[i]=="He"){
+   split2="híː";
+  }else if(translatearray[i]=="am"){
+   split2="(ə)m"; 
+  }else if(translatearray[i]=="a.m."){
+   split2="éɪém"; 
+  }else{
+  
+  try{
+  var fetch=webliopath+value;
+  var encode=encodeURI(fetch);
+  var response = UrlFetchApp.fetch(encode).toString().replace(/;.*/g,"").replace(/【.*】/g,"").replace(/\<span class=phoneticEjjeExt\>/g,"").replace(/\<\/span\>/g,"").replace("(弱形)","").replace("(強形)",",").replace(/; \,/g,", ");
+  var split0=response.split(splitvalue0); 
+  var split1=split0[1].split(splitvalue);
+  }catch(catchdata){
+  var split2="undefind";
+  }
+  
+  try{
+  var split2=split1[0];
+  }catch(catchdata){
+  var split2="undefind";
+  }
+  
+  var phoneticid="phonetic"+i+"_id";
+  app.getElementById(phoneticid).setText(split2)
+                                .setVisible(true);
+  }
+  
+  if(translatearray[i]!=translatearray[i-1]){
+    if(split2==splitword[i-1]){
+    split2=translatearray[i];
+    }
+   }
+  var phoneticid="phonetic"+i+"_id";
+  app.getElementById(phoneticid).setText(split2)
+                                .setHref(webliopath+translatearray[i])
+                                .setVisible(true);
+  splitword+=split2+",";
+  splitword=splitword.split(",");
+  }
+  
+  }catch(e){
+  }
+  var word=(e.parameter.textarea1_name).replace(/\?/g,"").replace(/\!/g,"").replace(/\./g,"").replace(/\,/g,"").replace(/\"/g,"").replace(/\./g,"").split(" ");
+  app.getElementById('panels_id').setPixelSize(300, (word.length*23));
+
+  return app;
+  }
