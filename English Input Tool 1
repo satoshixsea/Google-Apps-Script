@@ -1,0 +1,472 @@
+var GTpath="http://translate.google.co.jp/#en/ja/";
+var alcpath="http://eow.alc.co.jp/search?q=";
+
+var repeat=50;
+
+var warnigncolor="LemonChiffon";
+
+function onOpen() { 
+  var mySheet = SpreadsheetApp.getActiveSpreadsheet();
+  var myMenuEntries = [ {name: "GUI", functionName: "myFunction"}
+];
+  mySheet.addMenu("SCRIPT", myMenuEntries);  //メニューエリアにSCRIPTという名前のメニューを追加します。
+}
+
+function myFunction() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication().setTitle("Input Tool 1").setWidth(790).setHeight(777);
+  var panel=app.createVerticalPanel();
+  var panelH=app.createHorizontalPanel();
+  var panelH0=app.createHorizontalPanel();  
+  var panelH1=app.createHorizontalPanel();
+  var panelHfullsentence=app.createHorizontalPanel();
+  var panelS=app.createScrollPanel().setSize(360,200);
+  var panelV1=app.createVerticalPanel();
+  var panelVword=app.createVerticalPanel();
+　var panelSword=app.createScrollPanel().setSize(360,200).setStyleAttribute('marginLeft', '10px').setStyleAttribute('marginBottom', '10px');
+  var panelVnext=app.createVerticalPanel();
+ 
+  var range=ss.getActiveRange();
+  var rowindex=range.getRow();
+
+  var ta_jp_w=360;
+  var ta_jp_h=200;
+  var ta_jp_margin='5px';
+
+  var ta_jp_fontsize='16pt';
+
+  var ta_en_w=360;
+  var ta_en_h=200;
+  var ta_en_margin='5px';
+  var ta_en_fontsize='18pt';
+
+  var ta_enfull_w=360;
+  var ta_enfull_h=200;
+  var ta_enfull_margin='5px';
+  var ta_enfull_fontsize='16pt';
+
+  var ta_GT_w=360;
+  var ta_GT_h=200;
+  var ta_GT_margin='5px';
+  var ta_GT_fontsize='18pt';
+
+  var anchorfontsize='16pt' 
+  var GTlinkfontsize='12pt' 
+
+  var label_fullsentence=app.createLabel().setText("LINK").setStyleAttribute('fontWeight', 'bold');
+  var label_japanese=app.createLabel().setText("Japanese(Input)　　　　　 　　　　　　　　　　　Fullsentence").setStyleAttribute('fontWeight', 'bold');  
+  var label_english=app.createLabel().setText("English(Input)　　　　　　　　　　　　　　　　　　Google Translate").setStyleAttribute('fontWeight', 'bold');
+
+  var button=app.createButton("は");
+  var Vnextbutton=app.createButton("NEXT").setHeight(40).setStyleAttribute('marginTop','120px');
+
+  var la_currentrow=app.createLabel("currentrow").setId('la_currentrow_id');
+  var tb_currentrow=app.createTextBox().setId('tb_currentrow_id').setName('tb_currentrow_name').setStyleAttribute('border', '0px solid #ccc');
+  var la_warning=app.createLabel("this is not the current row").setVisible(false).setId('la_warning_id');
+  var bt_warning=app.createButton("return").setVisible(false).setId('bt_warning_id');
+
+
+  var ta_jp=app.createTextArea().setId('ta_jp_id').setName('ta_jp_name')
+                                .setWidth(ta_jp_w).setHeight(ta_jp_h)
+                                .setStyleAttribute('font-size',ta_jp_fontsize).setStyleAttribute('marginBottom', ta_jp_margin);
+  var ta_enfull=app.createTextArea().setEnabled(false).setId('ta_enfull_id').setName('ta_enfull_name')
+                                .setWidth(ta_enfull_w).setHeight(ta_enfull_h).setStyleAttribute('marginLeft', ta_GT_margin)
+                                .setStyleAttribute('font-size',ta_enfull_fontsize).setStyleAttribute('marginBottom', ta_enfull_margin);
+  var ta_en=app.createTextArea().setId('ta_en_id').setName('ta_en_name')
+                                .setWidth(ta_en_w).setHeight(ta_en_h)
+                                .setStyleAttribute('font-size',ta_en_fontsize)
+  var ta_GT=app.createTextArea().setId('ta_GT_id').setName('ta_GT_name')
+                                .setWidth(ta_GT_w).setHeight(ta_GT_h)
+                                .setStyleAttribute('font-size',ta_GT_fontsize).setStyleAttribute('marginLeft', ta_GT_margin);
+  var refresh_bt=app.createButton("Refresh");
+  var next_bt=app.createButton("▼");
+  var prev_bt=app.createButton("▲");
+  var GTlink=app.createAnchor('Google Translate','href').setVisible(true).setId('GTlink_id').setStyleAttribute('font-size',GTlinkfontsize).setStyleAttribute('marginLeft','10px');
+
+  for(i=0;i<repeat;i++){
+  var id="anchor_alc"+i+"_id";
+  var name="anchor_alc"+i+"_name";
+  var anchor="anchor_alc"+i; 
+  anchor=app.createAnchor('text','href').setId(id).setName(name).setStyleAttribute('font-size',anchorfontsize);
+  anchor.setVisible(false);
+  var addanchor=anchor;
+  panelV1.add(addanchor);
+  }
+
+
+  for(i=0;i<repeat;i++){
+  var id="anchor_alc_word"+i+"_id";
+  var name="anchor_alc_word"+i+"_name";
+  var anchor_word="anchor_alc_word"+i; 
+  anchor_word=app.createAnchor('text','href').setId(id).setName(name).setStyleAttribute('font-size',anchorfontsize);
+  anchor_word.setVisible(false);
+  var addanchor_word=anchor_word;
+  panelVword.add(addanchor_word);
+  }  
+
+
+  ta_jp.addKeyUpHandler(app.createServerHandler('ta_jp_fnc').addCallbackElement(panel));
+  ta_en.addKeyUpHandler(app.createServerHandler('ta_en_fnc').addCallbackElement(panel));
+  ta_en.addKeyUpHandler(app.createServerHandler('alc_fnc').addCallbackElement(panel));
+
+  ta_GT.addKeyUpHandler(app.createServerHandler('enter_fnc').addCallbackElement(panel));
+
+  var refreshhandler=app.createServerClickHandler('refresh_fnc').addCallbackElement(panel);
+  refresh_bt.addClickHandler(refreshhandler);
+
+  var nexthandler=app.createServerClickHandler('next_fnc').addCallbackElement(panel);
+  next_bt.addClickHandler(nexthandler);
+  
+  var Vnexthandler=app.createServerClickHandler('Vnext_fnc').addCallbackElement(panel);
+  Vnextbutton.addClickHandler(Vnexthandler);  
+  
+  var prevhandler=app.createServerClickHandler('prev_fnc').addCallbackElement(panel);
+  prev_bt.addClickHandler(prevhandler);
+
+  var buttonhandler=app.createServerClickHandler('button_fnc').addCallbackElement(panel);
+  button.addClickHandler(buttonhandler);
+
+  var bt_warninghandler=app.createServerClickHandler('bt_warning_fnc').addCallbackElement(panel);
+  bt_warning.addClickHandler(bt_warninghandler);
+
+  refresh_fnc();
+
+  panel.add(panelH);
+  panelH.add(refresh_bt)
+        .add(prev_bt)
+        .add(next_bt)
+        .add(la_currentrow)
+        .add(tb_currentrow)
+        .add(la_warning)
+        .add(bt_warning);
+
+  panel.add(label_japanese)
+  　   .add(panelH0)
+       .add(label_english)
+       .add(panelH1)
+       .add(label_fullsentence)
+       .add(panelHfullsentence)
+  panelHfullsentence.add(panelS)
+                    .add(panelSword);
+  panelSword.add(panelVword);
+  panelH0.add(ta_jp)
+         .add(ta_enfull);
+  panelS.add(panelV1);
+  panelH1.add(ta_en)
+         .add(ta_GT)
+         .add(panelVnext)
+  panelVnext.add(button)
+             .add(Vnextbutton);
+  panel.add(GTlink);       
+  app.add(panel);
+  ss.show(app);
+}
+
+
+
+function refresh_fnc(){
+  bt_warning_fnc();
+  var app=UiApp.getActiveApplication();
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var range=ss.getActiveRange();
+  var rowindex=range.getRow();
+  var value_jp=ss.getRange('A'+rowindex).getValue();
+  var value_en=ss.getRange('C'+rowindex).getValue();
+  var value_GT=ss.getRange('D'+rowindex).getValue();
+  app.getElementById('ta_jp_id').setValue(value_jp);
+  app.getElementById('ta_en_id').setValue(value_en);
+  app.getElementById('ta_GT_id').setValue(value_GT);
+  app.getElementById('ta_jp_id').setCursorPos(0);
+  app.getElementById('tb_currentrow_id').setValue(rowindex);
+
+  for(i=0;i<repeat;i++){
+  var id="anchor_alc"+i+"_id";
+  app.getElementById(id).setVisible(false);
+}
+
+  for(i=0;i<repeat;i++){
+  var id="anchor_alc_word"+i+"_id";
+  app.getElementById(id).setVisible(false);
+}
+
+  var word=value_en.split("\n");
+    var sentence="";
+    var sentencefull="";
+    for(i=0;i<word.length;i++){
+    sentence+=word[i]+"%0A";
+    sentencefull+=word[i].trim()+" ";
+    }
+    var toGT=sentence+"%0A"+sentencefull;
+　　app.getElementById('GTlink_id').setText(LanguageApp.translate(sentencefull, 'en', 'ja')).setHref(GTpath+toGT);
+    app.getElementById('ta_enfull_id').setValue(sentencefull);
+
+alc_fnc_refresh();
+  return app;
+}
+
+
+
+function ta_jp_fnc(e){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var sss=SpreadsheetApp.getActiveSheet();
+  var parameter=e.parameter;
+  var keycode=parameter.keyCode;
+
+  var app=UiApp.getActiveApplication();
+  var range=ss.getActiveRange();
+  var rowindex=range.getRowIndex();
+  
+  var currentrow=e.parameter.tb_currentrow_name;
+  
+  var jp_sentence=e.parameter.ta_jp_name;
+  var sentence=jp_sentence.split("\n");
+  
+if(currentrow==rowindex){
+  var word=e.parameter.ta_jp_name.split("\n");
+
+  if(keycode==13){
+    if(sentence[sentence.length-2]==""){
+  app.getElementById('ta_en_id').setCursorPos(0);
+    }
+    }  
+  sss.getRange(rowindex,1).setValue(jp_sentence);
+}else{
+warning_action();
+  }
+  return app;
+}
+
+function ta_en_fnc(e){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var sss=SpreadsheetApp.getActiveSheet();
+  var parameter=e.parameter;
+  var keycode=parameter.keyCode;
+  
+  var app=UiApp.getActiveApplication();
+  var range=ss.getActiveRange();
+  var rowindex=range.getRowIndex();
+
+  var currentrow=e.parameter.tb_currentrow_name;
+  if(currentrow==rowindex){
+  var word=e.parameter.ta_en_name.split("\n");
+  if(keycode==13){//if1
+    if(word[word.length-2]==""){//if2
+    next_fnc(e);
+
+    }else{//if2close&openagain
+    var sentence="";
+    var sentencefull="";
+    for(i=0;i<word.length;i++){//for1
+    sentence+=word[i]+"%0A";
+    sentencefull+=word[i].trim()+" ";
+    }//for1close
+    var toGT=sentence+"%0A"+sentencefull;
+      app.getElementById('GTlink_id').setText(LanguageApp.translate(sentencefull, 'en', 'ja')).setHref(GTpath+toGT);
+      app.getElementById('ta_enfull_id').setValue(sentencefull);
+
+      for(i=0;i<word.length;i++){//for2
+        if(i==0){//if3
+          if(keycode==13){//if4
+          var wordGT= LanguageApp.translate(word[0], 'en', 'ja');
+          }//if4close
+        }else{//if3close open
+        var wordGT= LanguageApp.translate(word[i], 'en', 'ja');
+        }//if3close
+      }//for2close
+      var value=e.parameter.ta_en_name;
+      if(keycode==13){//if4
+        var valueGT= LanguageApp.translate(value, 'en', 'ja');   
+        sss.getRange(rowindex,4).setValue(valueGT.substring(0, valueGT.length));
+        sss.getRange(rowindex,3).setValue(value.substring(0, value.length)); 
+        app.getElementById('ta_GT_id').setValue(valueGT);
+       }//if4close
+   }//if2close
+   }//if1close
+        
+}else{
+warning_action();
+  }    
+  return app;
+}  
+
+
+function prev_fnc(){
+  var ss = SpreadsheetApp.getActiveSheet();
+  var app = UiApp.getActiveApplication();  
+  var range = ss.getActiveRange();
+  var column = range.getColumn(); 
+  var row = range.getRow(); 
+  var rowindex=range.getRow();
+  
+  if(rowindex!=1){
+  var newRow = row-1;
+  ss.getRange(newRow , column).activate();
+  refresh_fnc();
+}
+  return app;
+}
+
+
+function next_fnc(e){
+  var s = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.getActiveSheet();
+  var app = UiApp.getActiveApplication();  
+  var range = ss.getActiveRange();
+  var column = range.getColumn(); 
+  var row = range.getRow(); 
+  var rowindex=range.getRowIndex();
+  var newRow = row+1;
+  ss.getRange(newRow , column).activate();
+
+  refresh_fnc();
+  return app;
+}
+
+
+function enter_fnc(e){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.getActiveApplication();
+  var range=ss.getActiveRange();
+  var rowindex=range.getRow();
+  var parameter=e.parameter;
+  var keycode=parameter.keyCode;  
+  if(keycode==13){
+  var value_jp=e.parameter.ta_jp_name;
+  var value_en=e.parameter.ta_en_name;
+  var value_enfull=e.parameter.ta_enfull_name;
+  var value_GT=e.parameter.ta_GT_name;
+  ss.getRange('A'+rowindex).setValue(value_jp.replace("\n\n",""));
+  ss.getRange('B'+rowindex).setValue(value_enfull.replace("\n\n",""));
+  ss.getRange('D'+rowindex).setValue(value_GT.replace("\n\n",""));
+  }  
+ }
+
+
+function alc_fnc(e){
+  var app=UiApp.getActiveApplication();
+  var parameter=e.parameter;
+  var keycode=parameter.keyCode;  
+
+if(keycode==13){
+var word=(e.parameter.ta_en_name).replace(/\?/g,"").replace(/\!/g,"").replace(/\./g,"").replace(/\,/g,"").replace(/\"/g,"").replace(/\./g,"").replace(/\，/g," ").split("\n");
+var sentencelen=word.length;
+
+for(i=0;i<sentencelen;i++){
+var id="anchor_alc"+i+"_id";
+app.getElementById(id).setText(word[i])
+                      .setHref(alcpath+word[i])
+                      .setVisible(true);
+}  
+var word2=(e.parameter.ta_enfull_name).replace(/\?/g,"").replace(/\!/g,"").replace(/\./g,"").replace(/\,/g,"").replace(/\"/g,"").replace(/\./g,"").replace(/\，/g," ").split(" ");
+var sentencelen2=word2.length;
+
+for(i=0;i<sentencelen2;i++){
+var id="anchor_alc_word"+i+"_id";
+app.getElementById(id).setText(word2[i])
+                      .setHref(alcpath+word2[i])
+                      .setVisible(true);  
+}
+}
+  return app;
+}
+
+
+function alc_fnc_refresh(){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.getActiveApplication();
+  var range=ss.getActiveRange();
+  var rowindex=range.getRow();
+  var value_en=ss.getRange('C'+rowindex).getValue();
+
+var word=(value_en).replace(/\?/g,"").replace(/\!/g,"").replace(/\./g,"").replace(/\,/g,"").replace(/\"/g,"").replace(/\./g,"").replace(/\，/g," ").split("\n");
+var sentencelen=word.length;
+
+for(i=0;i<sentencelen;i++){
+var id="anchor_alc"+i+"_id";
+app.getElementById(id).setText(word[i])
+                      .setHref(alcpath+word[i])
+                      .setVisible(true);  
+}
+
+
+var word2=(value_en).replace(/\?/g,"").replace(/\!/g,"").replace(/\./g,"").replace(/\,/g,"").replace(/\"/g,"").replace(/\./g,"").replace(/\，/g," ").split(" ");
+var sentencelen2=word2.length;
+
+for(i=0;i<sentencelen2;i++){
+var id="anchor_alc_word"+i+"_id";
+app.getElementById(id).setText(word2[i])
+                      .setHref(alcpath+word2[i])
+                      .setVisible(true);  
+}
+  return app;
+}
+
+
+function button_fnc(e){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.getActiveApplication();
+  var range=ss.getActiveRange();
+  var rowindex=range.getRow();
+  
+  var GTcurrent=e.parameter.ta_GT_name.split("\n");
+  GTcurrent[0]=GTcurrent[0]+"は";
+  
+  var GTfix="";
+  for(i=0;i<GTcurrent.length;i++){
+  GTfix+=GTcurrent[i]+"\n";
+  }
+  app.getElementById('ta_GT_id').setValue(GTfix.replace("\n\n",""));
+  ss.getRange('D'+rowindex).setValue(GTfix.replace("\n\n",""));
+  return app;
+}
+
+
+function temp(){
+ var s = "aiueo";
+ s = s.substring(0, s.length-1);
+Browser.msgBox(s);
+}
+
+
+function bt_warning_fnc(){
+  var app=UiApp.getActiveApplication().setStyleAttribute("background", "white");
+  app.getElementById('la_warning_id').setVisible(false);
+  app.getElementById('bt_warning_id').setVisible(false);
+  app.getElementById('la_currentrow_id').setStyleAttribute("color", "black");
+return app;
+}
+
+function warning_action(){
+var app=UiApp.getActiveApplication();
+app.setStyleAttribute("background", warnigncolor); 
+app.getElementById('la_warning_id').setVisible(true);
+app.getElementById('bt_warning_id').setVisible(true);
+app.getElementById('la_currentrow_id').setStyleAttribute("color", "red").setStyleAttribute("font-size",  "12pt");
+} 
+
+
+function onEdit_Date(){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var range=ss.getActiveRange();
+  var rowindex=range.getRowIndex();
+  var date=ss.getRange("E"+rowindex).setValue(Utilities.formatDate(new Date(), 'JST', 'yyyy-MM-dd-hh-mm-ss'));
+}
+
+function Vnext_fnc(e){
+onEdit_Date();
+var app=UiApp.getActiveApplication();
+
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.getActiveApplication();
+  var range=ss.getActiveRange();
+  var rowindex=range.getRow();
+  var value_jp=e.parameter.ta_jp_name;
+  var value_en=e.parameter.ta_en_name;
+  var value_enfull=e.parameter.ta_enfull_name;
+  var value_GT=e.parameter.ta_GT_name;
+  ss.getRange('A'+rowindex).setValue(value_jp.replace("\n\n",""));
+  ss.getRange('B'+rowindex).setValue(value_enfull.replace("\n\n",""));
+  ss.getRange('D'+rowindex).setValue(value_GT.replace("\n\n",""));
+next_fnc(e);
+return app;
+} 
