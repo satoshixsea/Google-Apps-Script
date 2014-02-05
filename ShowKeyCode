@@ -1,5 +1,4 @@
 function doGet() {
-  //var ss=SpreadsheetApp.getActiveSpreadsheet();
   var app=UiApp.createApplication().setTitle("Show keyCode");
   var panel=app.setWidth(240).setHeight(240).createVerticalPanel().setStyleAttribute('marginLeft','20px').setStyleAttribute('marginTop','20px');
   
@@ -10,7 +9,7 @@ function doGet() {
   
   var label1=app.createLabel().setText("code").setId('label1_id').setStyleAttribute('font-size',fontsize1);
   var textbox1=app.createTextBox().setWidth(width1).setHeight(height1).setName('textbox1_name').setId('textbox1_id').setStyleAttribute('font-size',fontsize1);
-  var label2=app.createLabel().setText("Type any key in the textarea to show the code above.").setId('label2_id').setStyleAttribute('font-size',fontsize2);  
+  var label2=app.createLabel().setText("Type any key in the textbox to show the code above.").setId('label2_id').setStyleAttribute('font-size',fontsize2);  
 
   app.getElementById('textbox1_id').setCursorPos(0);
 
@@ -21,7 +20,6 @@ function doGet() {
   panel.add(textbox1);
   panel.add(label2);
   app.add(panel);
-  //ss.show(app);
   return app;
 }
 
