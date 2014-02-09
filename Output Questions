@@ -1,0 +1,116 @@
+      var loadss = SpreadsheetApp.openById('0ArLXWd6_jSR2dHctdm9pVFY5cmlkd1JlRmdJN0tvM1E').getSheetByName("Sheet1");
+      var lastrow=loadss.getRange("A:A").getLastRow();
+      var load_en=loadss.getRange("A1:"+"A"+lastrow).getValues().toString().replace(/\, /g,"，").split(",");//英文中の半角,は配列の区切りになってしまうので、全角に置換して、その後,でsplit。
+      var load_selects=loadss.getRange("B1:"+"B"+lastrow).getValues().toString().replace(/\, /g,"，").replace(/\n/g,"@@@").split(",")
+      var ans=loadss.getRange("C1:"+"C"+lastrow).getValues().toString().replace(/\, /g,"，").split(",");
+
+function doGet() {
+var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication().setTitle("Output Questions");
+  var panel=app.createVerticalPanel();
+  var panelH=app.createHorizontalPanel();
+  
+  var num=app.createTextBox().setVisible(false).setValue(0).setId('num_id').setName('num_name');
+  var ta_en=app.createLabel().setId('ta_en_id').setStyleAttribute('marginBottom', '20px');
+  var radio1=app.createRadioButton('group1',"Radio1").setId('radio1_id').setName('radio1_name');
+  var radio2=app.createRadioButton('group1',"Radio2").setId('radio2_id').setName('radio2_name');
+  var radio3=app.createRadioButton('group1',"Radio3").setId('radio3_id').setName('radio3_name');
+  var radio4=app.createRadioButton('group1',"Radio4").setId('radio4_id').setName('radio4_name');
+  var label=app.createLabel().setText("<previous answer>").setStyleAttribute('marginTop', '20px');
+  var ans=app.createLabel().setText('').setId('ans_id').setStyleAttribute('fontWeight', 'bold');
+
+  var next=app.createButton("▶");
+  var prev=app.createButton("◀");
+
+  var radio_handler=app.createServerHandler('radio_fnc');
+  radio_handler.addCallbackElement(panel);
+  radio1.addClickHandler(radio_handler);
+  radio2.addClickHandler(radio_handler);
+  radio3.addClickHandler(radio_handler);
+  radio4.addClickHandler(radio_handler);
+
+
+  var nexthandler=app.createServerClickHandler('next_fnc').addCallbackElement(panel);
+  next.addClickHandler(nexthandler);
+  var prevhandler=app.createServerClickHandler('prev_fnc').addCallbackElement(panel);
+  prev.addClickHandler(prevhandler);
+
+  refresh_fnc();
+  
+  panel.add(num)
+       .add(ta_en)
+       .add(radio1)
+       .add(radio2)
+       .add(radio3)
+       .add(radio4)
+       .add(label)
+       .add(ans)
+       .add(panelH);
+  panelH.add(prev)
+        .add(next);
+  app.add(panel);
+  //ss.show(app);
+
+  return app;
+}
+
+function clear_fnc(e){
+var app=UiApp.getActiveApplication();
+var num=parseInt(e.parameter.num_name);
+app.getElementById('radio1_id').setValue(false);
+app.getElementById('radio2_id').setValue(false);
+app.getElementById('radio3_id').setValue(false);
+app.getElementById('radio4_id').setValue(false);
+app.getElementById('ans_id').setText(ans[num]);
+return app;
+}
+
+
+function radio_fnc(e){
+var app=UiApp.getActiveApplication();
+next_fnc(e);
+return app;
+}
+
+
+function refresh_fnc(){
+var app=UiApp.getActiveApplication();
+var select=load_selects[0].split("@@@");
+app.getElementById('ta_en_id').setText(load_en[0]);
+app.getElementById('radio1_id').setText(select[0]);
+app.getElementById('radio2_id').setText(select[1]);
+app.getElementById('radio3_id').setText(select[2]);
+app.getElementById('radio4_id').setText(select[3]);
+return app;
+}
+
+
+function next_fnc(e){
+var app=UiApp.getActiveApplication();
+var num=parseInt(e.parameter.num_name)+1;
+app.getElementById('num_id').setValue(num);
+refresh_fnc();
+var select=load_selects[num].split("@@@");
+app.getElementById('ta_en_id').setText(load_en[num]);
+app.getElementById('radio1_id').setText(select[0]);
+app.getElementById('radio2_id').setText(select[1]);
+app.getElementById('radio3_id').setText(select[2]);
+app.getElementById('radio4_id').setText(select[3]);
+clear_fnc(e);
+return app;
+}
+
+function prev_fnc(e){
+var app=UiApp.getActiveApplication();
+var num=parseInt(e.parameter.num_name)-1;
+app.getElementById('num_id').setValue(num);
+refresh_fnc();
+var select=load_selects[num].split("@@@");
+app.getElementById('ta_en_id').setText(load_en[num]);
+app.getElementById('radio1_id').setText(select[0]);
+app.getElementById('radio2_id').setText(select[1]);
+app.getElementById('radio3_id').setText(select[2]);
+app.getElementById('radio4_id').setText(select[3]);
+clear_fnc(e);
+return app;
+}
