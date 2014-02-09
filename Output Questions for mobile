@@ -5,11 +5,11 @@
       var ans=loadss.getRange("C1:"+"C"+lastrow).getValues().toString().replace(/\, /g,"，").split(",");
 
 function doGet() {
-  var app=UiApp.createApplication().setTitle("Output Questions");
+  var app=UiApp.createApplication().setTitle("Output Questions for mobile");
   var panel=app.createVerticalPanel().setStyleAttribute('marginLeft','75px');
   
   var useragent=UiApp.getUserAgent();
-  if(useragent.match("iPhone")||useragent.match("Android")){    
+  if(useragent.match("Android")||useragent.match("iPhone")){ 
 
   var panelH=app.createHorizontalPanel();
 
@@ -19,7 +19,7 @@ function doGet() {
   var fontsize1='36pt';
   var fontsize2='24pt';
 
-  var title=app.createLabel().setText("Output Questions").setStyleAttribute('marginBottom', '200px').setStyleAttribute('font-size',fontsize2);
+  var title=app.createLabel().setText("Output Questions for mobile").setStyleAttribute('marginBottom', '200px').setStyleAttribute('font-size',fontsize2);
   var num=app.createTextBox().setVisible(false).setValue(0).setId('num_id').setName('num_name');
   var ta_en=app.createLabel().setId('ta_en_id').setWidth(width).setStyleAttribute('font-size',fontsize1).setStyleAttribute('marginBottom', '60px');
   var radio1=app.createRadioButton('group1',"Radio1").setId('radio1_id').setName('radio1_name').setStyleAttribute('font-size',fontsize1);
