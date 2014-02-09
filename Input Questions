@@ -1,0 +1,97 @@
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var sss=SpreadsheetApp.getActiveSheet();
+  var range=ss.getActiveRange();
+  var row=range.getRow();
+  var column=range.getColumn(); 
+
+
+function myFunction() {
+  var app=UiApp.createApplication().setTitle("Input Questions").setWidth(240).setHeight(240);
+  var panel=app.createVerticalPanel();
+  var panelH=app.createHorizontalPanel();
+  var ta_en=app.createTextArea().setId('ta_en_id').setName("ta_en_name");
+  var ta_select=app.createTextArea().setId('ta_select_id').setName("ta_select_name");
+  var ta_ans=app.createTextArea().setId('ta_ans_id').setName("ta_ans_name");
+  var refresh=app.createButton("Refresh");
+  var prev=app.createButton("▲");  
+  var next=app.createButton("▼");
+  
+  ta_en.addKeyUpHandler(app.createServerHandler('ta_en_fnc').addCallbackElement(panel));
+  ta_select.addKeyUpHandler(app.createServerHandler('ta_select_fnc').addCallbackElement(panel));
+  ta_ans.addKeyUpHandler(app.createServerHandler('ta_ans_fnc').addCallbackElement(panel));
+
+  var refreshhandler=app.createServerClickHandler('refresh_fnc').addCallbackElement(panel);
+  refresh.addClickHandler(refreshhandler);
+  var nexthandler=app.createServerClickHandler('next_fnc').addCallbackElement(panel);
+  next.addClickHandler(nexthandler);
+  var prevhandler=app.createServerClickHandler('prev_fnc').addCallbackElement(panel);
+  prev.addClickHandler(prevhandler);
+  
+  refresh_fnc();
+  
+  panel.add(ta_en)
+       .add(ta_select)
+       .add(ta_ans)
+       .add(panelH);
+  panelH.add(refresh)
+        .add(prev)
+        .add(next);
+  app.add(panel);
+  ss.show(app);
+}
+
+function ta_en_fnc(e){
+  var app=UiApp.getActiveApplication();
+  var value=e.parameter.ta_en_name;
+  sss.getRange(row,1).setValue(value);
+  return app;
+}
+
+function ta_select_fnc(e){
+  var app=UiApp.getActiveApplication();
+  var value=e.parameter.ta_select_name;
+  sss.getRange(row,2).setValue(value);
+  return app;
+}
+
+function ta_ans_fnc(e){
+  var app=UiApp.getActiveApplication();
+  var value=e.parameter.ta_ans_name;
+  sss.getRange(row,3).setValue(value);
+  return app;
+}
+
+function refresh_fnc(){
+  var range=ss.getActiveRange();
+  var row=range.getRow();
+  var app = UiApp.getActiveApplication();  
+  var value_en=ss.getRange('A'+row).getValue();
+  var value_select=ss.getRange('B'+row).getValue();
+  var value_ans=ss.getRange('C'+row).getValue();
+  app.getElementById('ta_en_id').setValue(value_en);
+  app.getElementById('ta_select_id').setValue(value_select);
+  app.getElementById('ta_ans_id').setValue(value_ans);
+  return app;
+}
+
+function prev_fnc(e){
+  var app = UiApp.getActiveApplication();  
+  ta_en_fnc(e);
+  ta_select_fnc(e);
+  ta_ans_fnc(e);
+  var newRow = row-1;
+  sss.getRange(newRow , column).activate();
+  refresh_fnc();
+  return app;
+}
+
+function next_fnc(e){
+  var app = UiApp.getActiveApplication(); 
+  ta_en_fnc(e);
+  ta_select_fnc(e);
+  ta_ans_fnc(e);
+  var newRow = row+1;
+  sss.getRange(newRow , column).activate();
+  refresh_fnc();
+  return app;
+}
