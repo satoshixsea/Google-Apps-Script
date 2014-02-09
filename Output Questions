@@ -5,7 +5,6 @@
       var ans=loadss.getRange("C1:"+"C"+lastrow).getValues().toString().replace(/\, /g,"，").split(",");
 
 function doGet() {
-var ss=SpreadsheetApp.getActiveSpreadsheet();
   var app=UiApp.createApplication().setTitle("Output Questions");
   var panel=app.createVerticalPanel();
   var panelH=app.createHorizontalPanel();
@@ -49,7 +48,6 @@ var ss=SpreadsheetApp.getActiveSpreadsheet();
   panelH.add(prev)
         .add(next);
   app.add(panel);
-  //ss.show(app);
 
   return app;
 }
