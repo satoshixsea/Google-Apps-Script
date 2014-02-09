@@ -1,0 +1,302 @@
+var repeat=1000;
+
+var googlepath="https://www.google.co.jp/#q=";
+var wikipath="http://ja.wikipedia.org/wiki/";
+var alcpath="http://eow.alc.co.jp/search?q=";
+var path="";
+var value="";
+var value2="";
+var value3="";
+
+function doGet() {
+  var app=UiApp.createApplication().setTitle("Create Links");
+  var panel=app.createVerticalPanel().setStyleAttribute('marginTop', '20px').setStyleAttribute('marginLeft', '20px');
+  var panelH=app.createHorizontalPanel();
+  var panelH1=app.createHorizontalPanel();
+  var panelH2=app.createHorizontalPanel();
+  var scroll=app.createScrollPanel().setPixelSize(1000, 1000);//Width,Height
+  var panelV1=app.createVerticalPanel().setStyleAttribute('marginLeft', '10px').setStyleAttribute('marginTop', '10px');
+  var panelH3=app.createHorizontalPanel();
+  
+  var width1=240;
+  var width2=360;
+  var width3=190;
+  var height1=360;
+  var height2=25;
+  var fontsize1='12pt';
+
+  var count_row=app.createTextBox().setText(0).setId('count_row_id').setName('count_row_name').setVisible(false);
+
+  var googleradio=app.createRadioButton('group1',"Google Search").setId('googleradio_id').setValue(true);
+  var label1=app.createLabel().setText("AND").setStyleAttribute('marginLeft','20px');
+  var wikiradio=app.createRadioButton('group1',"Wikipedia").setId('wikiradio_id');
+  var alcradio=app.createRadioButton('group1',"ALC英辞郎").setId('alcradio_id');
+  var URLradio=app.createRadioButton('group1',"Create Link by URL").setId('URLradio_id');
+
+  var textbox1=app.createTextBox().setText("https://www.google.co.jp/#q=").setVisible(false).setWidth(width2).setHeight(height2)
+                  .setName('textbox1_name').setId('textbox1_id')
+                  .setStyleAttribute('marginBottom', '5px').setStyleAttribute('marginTop', '5px').setStyleAttribute('background','lightgray');  
+  var textbox2=app.createTextBox().setWidth(width3).setHeight(height2).setName('textbox2_name').setId('textbox2_id')
+                  .setStyleAttribute('marginBottom', '5px');
+  var textbox3=app.createTextBox().setWidth(width3).setHeight(height2).setName('textbox3_name').setId('textbox3_id')
+                  .setStyleAttribute('marginBottom', '5px').setVisible(false);
+  var checkbox1=app.createCheckBox().setText('"exact words in that exact order"').setName('checkbox1_name').setId('checkbox1_id')
+                   .setStyleAttribute('marginLeft','20px');
+  var textarea1=app.createTextArea().setWidth(width1).setHeight(height1).setName('textarea1_name').setId('textarea1_id')
+                   .setStyleAttribute('marginTop', '10px').setStyleAttribute('font-size',fontsize1);
+               
+  var button1=app.createButton("BUTTON");
+  
+  var sort_label=app.createLabel().setText('Sort').setStyleAttribute('marginTop','10px');
+  var buttonA_Z=app.createButton("A-Z");
+  var buttonZ_A=app.createButton("Z-A");
+
+  var num_textlabel=app.createLabel().setText("Link Start No.").setStyleAttribute('marginLeft','30px').setStyleAttribute('marginTop','10px');
+  var num_textbox=app.createTextBox().setText(0).setId('num_textbox_id').setName('num_textbox_name').setWidth(120).setStyleAttribute('marginTop','5px');
+
+ for(i=0;i<repeat;i++){
+  var id="anchor"+i+"_id";
+  var name="anchor"+i+"_name";
+  var anchor="anchor"+i; 
+  anchor=app.createAnchor('text','href').setId(id).setName(name).setStyleAttribute('font-size',fontsize1);
+  anchor.setVisible(false);
+  var addanchor=anchor;
+  panelV1.add(addanchor);
+  }  
+
+  textarea1.addKeyUpHandler(app.createServerHandler('keyup_fnc1').addCallbackElement(panel));
+  textbox1.addKeyUpHandler(app.createServerHandler('keyup_fnc2').addCallbackElement(panel));
+  textbox2.addKeyUpHandler(app.createServerHandler('keyup_textbox2_fnc').addCallbackElement(panel));
+  num_textbox.addKeyUpHandler(app.createServerHandler('keyup_fnc1').addCallbackElement(panel));
+
+  var googleradio_handler=app.createServerHandler('googleradio2_fnc');
+  googleradio_handler.addCallbackElement(panel);
+  googleradio.addClickHandler(googleradio_handler);
+  checkbox1.addClickHandler(googleradio_handler);
+
+  var wikiradio_handler=app.createServerHandler('wikiradio_fnc');
+  wikiradio_handler.addCallbackElement(panel);
+  wikiradio.addClickHandler(wikiradio_handler);
+
+  var alcradio_handler=app.createServerHandler('alcradio_fnc');
+  alcradio_handler.addCallbackElement(panel);
+  alcradio.addClickHandler(alcradio_handler);
+  
+  var URLradio_handler=app.createServerHandler('URLradio_fnc');
+  URLradio_handler.addCallbackElement(panel);
+  URLradio.addClickHandler(URLradio_handler);  
+  
+  var checkbox_handler=app.createServerHandler('checkbox_fnc');
+  checkbox_handler.addCallbackElement(panel);
+  checkbox1.addClickHandler(checkbox_handler);
+  
+  var sort_A_Z_handler=app.createServerHandler('sort_A_Z_fnc');
+  sort_A_Z_handler.addCallbackElement(panel);
+  buttonA_Z.addClickHandler(sort_A_Z_handler);
+  
+  var sort_Z_A_handler=app.createServerHandler('sort_Z_A_fnc');
+  sort_Z_A_handler.addCallbackElement(panel);
+  buttonZ_A.addClickHandler(sort_Z_A_handler);
+
+  panel.add(count_row);
+  panel.add(panelH2);
+  panelH2.add(googleradio);
+  panelH2.add(checkbox1);
+  panel.add(panelH1);
+  panelH1.add(label1);
+  panelH1.add(textbox2);
+  panel.add(textbox3);
+  panel.add(wikiradio);
+  panel.add(alcradio);
+  panel.add(URLradio);
+  panel.add(textbox1);
+  panel.add(panelH3);
+  panelH3.add(sort_label);
+  panelH3.add(buttonA_Z);
+  panelH3.add(buttonZ_A);
+  panelH3.add(num_textlabel);
+  panelH3.add(num_textbox);
+  panel.add(scroll);
+  scroll.add(panelH);  
+  panelH.add(textarea1);
+  panelH.add(panelV1);
+  app.add(panel);  
+  return app;
+}
+
+
+function keyup_fnc1(e){
+var app=UiApp.getActiveApplication();
+for(i=0;i<repeat;i++){
+var id="anchor"+i+"_id";
+app.getElementById(id).setVisible(false);
+}
+
+path=e.parameter.textbox1_name;
+value=(e.parameter.textarea1_name).split("\n");
+value2=(e.parameter.textbox2_name)+" ";
+value3=(e.parameter.textbox3_name);
+setdata_fnc(e);
+
+var valuelength=value.length+1;
+app.getElementById('count_row_id').setText(valuelength);
+app.getElementById('textarea1_id').setHeight((valuelength*30)+'px');
+return app;
+}
+
+
+function keyup_fnc2(e){
+var app=UiApp.getActiveApplication();
+keyup_fnc1(e);
+return app;
+}
+
+
+function keyup_textbox2_fnc(e){
+var app=UiApp.getActiveApplication();
+app.getElementById('googleradio_id').setValue(true);
+googleradio2_fnc(e);
+return app;
+}
+
+
+function googleradio2_fnc(e){
+var app=UiApp.getActiveApplication();
+value=(e.parameter.textarea1_name).split("\n");
+value2=(e.parameter.textbox2_name)+" ";
+
+var judge=(e.parameter.checkbox1_name);
+if(judge=="true"){
+app.getElementById('textbox1_id').setValue(googlepath+'"');
+app.getElementById('textbox3_id').setValue('"');
+path=googlepath+'"';
+value3='"';
+}else if(judge=="false"){
+app.getElementById('textbox1_id').setValue(googlepath);
+app.getElementById('textbox3_id').setValue("");
+value3="";
+path=googlepath;
+}
+setdata_fnc(e);
+return app;
+}
+
+
+function wikiradio_fnc(e){
+var app=UiApp.getActiveApplication();
+app.getElementById('textbox1_id').setValue(wikipath);
+app.getElementById('checkbox1_id').setValue(false);
+
+path=wikipath;
+value=(e.parameter.textarea1_name).split("\n");
+setdata_fnc(e);
+return app;
+}
+
+
+function alcradio_fnc(e){
+var app=UiApp.getActiveApplication();
+app.getElementById('textbox1_id').setValue(alcpath);
+app.getElementById('checkbox1_id').setValue(false);
+
+path=alcpath;
+value=(e.parameter.textarea1_name).split("\n");
+setdata_fnc(e);
+return app;
+}
+
+
+function URLradio_fnc(e){
+var app=UiApp.getActiveApplication();
+app.getElementById('textbox1_id').setValue("");
+app.getElementById('checkbox1_id').setValue(false);
+
+path="";
+value=(e.parameter.textarea1_name).split("\n");
+setdata_fnc(e);
+return app;
+}
+
+
+function checkbox_fnc(e){
+var app=UiApp.getActiveApplication();
+app.getElementById('googleradio_id').setValue(true);
+googleradio2_fnc(e);
+return app;
+}
+
+
+function setdata_fnc(e){
+var app=UiApp.getActiveApplication();
+var num=parseInt(e.parameter.num_textbox_name);
+
+if(value2==" "){
+value2="";
+}
+for(i=0;i<value.length;i++){
+var id="anchor"+i+"_id";
+app.getElementById(id).setText((i+num)+"._"+value[i])
+                      .setHref(path+value2+value[i]+value3)
+                      .setVisible(true);
+}
+}
+
+
+function sort_A_Z_fnc(e){
+var app=UiApp.getActiveApplication();
+var data=(e.parameter.textarea1_name).replace(/\,/g,"，").split("\n");
+
+var sort1=data.sort(
+	function(a,b){
+    	if( a < b ) return -1;
+        if( a > b ) return 1;
+        return 0;
+    }
+);
+
+
+var newsort1=sort1.toString().replace(/\,/g,"\n").replace(/，/g,",");
+app.getElementById('textarea1_id').setValue(newsort1);
+
+for(i=0;i<repeat;i++){
+var id="anchor"+i+"_id";
+app.getElementById(id).setVisible(false);
+}
+
+path=e.parameter.textbox1_name;
+value=newsort1.split("\n");
+value2=(e.parameter.textbox2_name)+" ";
+value3=(e.parameter.textbox3_name);
+setdata_fnc(e);
+
+return app;
+}
+
+function sort_Z_A_fnc(e){
+var app=UiApp.getActiveApplication();
+var data=(e.parameter.textarea1_name).split("\n");
+//var sort1=data.sort();
+
+var sort1=data.sort(
+	function(a,b){
+    	if( a < b ) return 1;
+        if( a > b ) return -1;
+        return 0;
+    }
+);
+
+var newsort1=sort1.toString().replace(/\,/g,"\n").replace(/，/g,",");
+app.getElementById('textarea1_id').setValue(newsort1);
+
+for(i=0;i<repeat;i++){
+var id="anchor"+i+"_id";
+app.getElementById(id).setVisible(false);
+}
+
+path=e.parameter.textbox1_name;
+value=newsort1.split("\n");
+value2=(e.parameter.textbox2_name)+" ";
+value3=(e.parameter.textbox3_name);
+setdata_fnc(e);
+return app;
+}
