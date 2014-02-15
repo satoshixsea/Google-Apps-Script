@@ -3,6 +3,7 @@ var webliopath="http://ejje.weblio.jp/content/";
 var sentencearray="";//
 var split2="";
 var splitword="";
+var num=1000;
 
 function doGet() {
   var app=UiApp.createApplication().setTitle("Phonetic symbols");
@@ -24,7 +25,7 @@ function doGet() {
   
   var refreshbutton=app.createButton("Clear");
 
-for(i=0;i<50;i++){
+for(i=0;i<num;i++){
   var id="anchor"+i+"_id";
   var anchor="anchor"+i; 
   anchor=app.createAnchor('text','href').setId(id).setStyleAttribute('font-size',fontsize1);
@@ -33,7 +34,7 @@ for(i=0;i<50;i++){
   panelV3.add(addanchor);
   }  
   
-  for(i=0;i<50;i++){
+  for(i=0;i<num;i++){
   var id="phonetic"+i+"_id";
   var phonetic="phonetic"+i; 
   phonetic=app.createAnchor('text','href').setId(id).setStyleAttribute('font-size',fontsize1);
@@ -66,18 +67,19 @@ for(i=0;i<50;i++){
 }
 
 function refresh_fnc(){
-  var ss=SpreadsheetApp.getActiveSpreadsheet();
   var app=UiApp.getActiveApplication();
 
   app.getElementById('textarea1_id').setCursorPos(0);
   app.getElementById('textarea1_id').setValue("");
-  for(i=0;i<50;i++){
+  for(i=0;i<num;i++){
   var anchorid="anchor"+i+"_id";
   app.getElementById(anchorid).setVisible(false);
   var phoneticid="phonetic"+i+"_id";
   app.getElementById(phoneticid).setVisible(false);
   }
+
   return app;
+
 }
 
 
@@ -88,11 +90,9 @@ function keyup_fnc1(e){
   var keycode = parameter.keyCode;
 
   if(keycode==32){
-  
   var word=(e.parameter.textarea1_name).replace(/\?/g,"").replace(/\!/g,"").replace(/\./g,"").replace(/\,/g,"").replace(/\"/g,"").replace(/\./g,"").split(" ");
   
   var sentencelen=word.length-1;
-  
   for(i=0;i<sentencelen;i++){
   var id="anchor"+i+"_id";
   app.getElementById(id).setText(word[i])
@@ -174,3 +174,4 @@ function keyup_fnc1(e){
 
   return app;
   }
+  
