@@ -3,23 +3,31 @@
       var load_en=loadss.getRange("A1:"+"A"+lastrow).getValues().toString().replace(/\, /g,"，").split(",");//英文中の半角,は配列の区切りになってしまうので、全角に置換して、その後,でsplit。
       var load_selects=loadss.getRange("B1:"+"B"+lastrow).getValues().toString().replace(/\, /g,"，").replace(/\n/g,"@@@").split(",")
       var ans=loadss.getRange("C1:"+"C"+lastrow).getValues().toString().replace(/\, /g,"，").split(",");
-
+      var nodata="No data...";
+      var gnum="";
 function doGet() {
   var app=UiApp.createApplication().setTitle("Output Questions");
   var panel=app.createVerticalPanel();
-  var panelH=app.createHorizontalPanel();
+  var panelH=app.createHorizontalPanel().setStyleAttribute('marginTop', '10px');
+  var panelHnum=app.createHorizontalPanel();
   
+  var useragent=UiApp.getUserAgent();
+  if(useragent.match("Android")||useragent.match("iPhone")){ 
+    
+  var title=app.createLabel().setText("Output Questions for mobile");
   var num=app.createTextBox().setVisible(false).setValue(0).setId('num_id').setName('num_name');
+  var numshow=app.createTextBox().setWidth(60).setValue(1).setId('numshow_id').setName('numshow_name').setStyleAttribute('text-align','center');
   var ta_en=app.createLabel().setId('ta_en_id').setStyleAttribute('marginBottom', '20px');
   var radio1=app.createRadioButton('group1',"Radio1").setId('radio1_id').setName('radio1_name');
   var radio2=app.createRadioButton('group1',"Radio2").setId('radio2_id').setName('radio2_name');
   var radio3=app.createRadioButton('group1',"Radio3").setId('radio3_id').setName('radio3_name');
   var radio4=app.createRadioButton('group1',"Radio4").setId('radio4_id').setName('radio4_name');
-  var label=app.createLabel().setText("<previous answer>").setStyleAttribute('marginTop', '20px');
+  var label=app.createLabel().setText("<previous answer>").setId('label_id').setStyleAttribute('marginTop', '20px');
   var ans=app.createLabel().setText('').setId('ans_id').setStyleAttribute('fontWeight', 'bold');
-
-  var next=app.createButton("▶");
-  var prev=app.createButton("◀");
+  var label_total=app.createLabel().setText("　/ "+lastrow);
+  
+  var next=app.createButton("▶").setId('next_id');
+  var prev=app.createButton("◀").setId('prev_id');;
 
   var radio_handler=app.createServerHandler('radio_fnc');
   radio_handler.addCallbackElement(panel);
@@ -28,15 +36,40 @@ function doGet() {
   radio3.addClickHandler(radio_handler);
   radio4.addClickHandler(radio_handler);
 
-
   var nexthandler=app.createServerClickHandler('next_fnc').addCallbackElement(panel);
   next.addClickHandler(nexthandler);
   var prevhandler=app.createServerClickHandler('prev_fnc').addCallbackElement(panel);
   prev.addClickHandler(prevhandler);
 
-  refresh_fnc();
+  numshow.addKeyUpHandler(app.createServerHandler('numkeyup_fnc')
+          .addCallbackElement(panel));  
   
-  panel.add(num)
+  refresh_fnc();
+
+  var width=850;
+  var btH=200;
+  var btW=200;
+  var tbH=120;
+  var tbW=120;
+  var fontsize1='36pt';
+  var fontsize2='24pt';
+
+panel.setStyleAttribute('marginLeft', '50px')
+title.setStyleAttribute('marginBottom', '200px').setStyleAttribute('font-size',fontsize2);
+ta_en.setWidth(width).setStyleAttribute('font-size',fontsize1).setStyleAttribute('marginBottom', '60px');
+radio1.setStyleAttribute('font-size',fontsize1);
+radio2.setStyleAttribute('font-size',fontsize1);
+radio3.setStyleAttribute('font-size',fontsize1);
+radio4.setStyleAttribute('font-size',fontsize1);
+label.setStyleAttribute('marginTop', '60px').setStyleAttribute('font-size',fontsize2);
+ans.setStyleAttribute('fontWeight', 'bold').setStyleAttribute('font-size',fontsize1).setStyleAttribute('marginBottom', '60px');
+next.setWidth(btW).setHeight(btH).setStyleAttribute('font-size',fontsize1);
+prev.setWidth(btW).setHeight(btH).setStyleAttribute('font-size',fontsize1);  
+numshow.setWidth(tbW).setHeight(tbH).setStyleAttribute('font-size',fontsize2);  
+label_total.setStyleAttribute('font-size',fontsize2).setStyleAttribute('marginTop', '40px'); 
+  
+    panel.add(title)
+       .add(panelHnum)
        .add(ta_en)
        .add(radio1)
        .add(radio2)
@@ -45,21 +78,33 @@ function doGet() {
        .add(label)
        .add(ans)
        .add(panelH);
+  panelHnum.add(num)
+       .add(numshow)
+       .add(label_total);
   panelH.add(prev)
         .add(next);
   app.add(panel);
 
   return app;
+}else{
+  var label=app.createLabel().setText("スマートフォンからアクセスしてください。");
+  panel.add(label)
+  app.add(panel);
+
+return app;
+}
 }
 
 function clear_fnc(e){
 var app=UiApp.getActiveApplication();
-var num=parseInt(e.parameter.num_name);
-app.getElementById('radio1_id').setValue(false);
-app.getElementById('radio2_id').setValue(false);
-app.getElementById('radio3_id').setValue(false);
-app.getElementById('radio4_id').setValue(false);
+var numshow=parseInt(e.parameter.numshow_name);
+var num=numshow-1;
+app.getElementById('radio1_id').setValue(false).setEnabled(true);
+app.getElementById('radio2_id').setValue(false).setEnabled(true);
+app.getElementById('radio3_id').setValue(false).setEnabled(true);
+app.getElementById('radio4_id').setValue(false).setEnabled(true);
 app.getElementById('ans_id').setText(ans[num]);
+
 return app;
 }
 
@@ -79,36 +124,139 @@ app.getElementById('radio1_id').setText(select[0]);
 app.getElementById('radio2_id').setText(select[1]);
 app.getElementById('radio3_id').setText(select[2]);
 app.getElementById('radio4_id').setText(select[3]);
+app.getElementById('ans_id').setVisible(true);
+app.getElementById('prev_id').setEnabled(false);
+
 return app;
 }
 
 
 function next_fnc(e){
 var app=UiApp.getActiveApplication();
-var num=parseInt(e.parameter.num_name)+1;
+try{
+var numshow=parseInt(e.parameter.numshow_name)+1;
+var num=numshow-1;
+
+gnum=numshow;
+btEnabled_fnc(e)
+
 app.getElementById('num_id').setValue(num);
-refresh_fnc();
+app.getElementById('numshow_id').setValue(numshow);
 var select=load_selects[num].split("@@@");
 app.getElementById('ta_en_id').setText(load_en[num]);
 app.getElementById('radio1_id').setText(select[0]);
 app.getElementById('radio2_id').setText(select[1]);
 app.getElementById('radio3_id').setText(select[2]);
 app.getElementById('radio4_id').setText(select[3]);
+app.getElementById('ans_id').setText(ans[num]).setVisible(true);
+
 clear_fnc(e);
 return app;
+
+}catch(date){
+var app=UiApp.getActiveApplication();
+var numshow=parseInt(e.parameter.numshow_name)+1;
+var num=numshow-1;
+gnum=numshow;
+app.getElementById('num_id').setVisible(false);
+app.getElementById('numshow_id').setVisible(true);
+app.getElementById('ta_en_id').setText(nodata).setEnabled(false).setValue(false);
+app.getElementById('radio1_id').setText(nodata).setEnabled(false).setValue(false);
+app.getElementById('radio2_id').setText(nodata).setEnabled(false).setValue(false);
+app.getElementById('radio3_id').setText(nodata).setEnabled(false).setValue(false);
+app.getElementById('radio4_id').setText(nodata).setEnabled(false).setValue(false);
+app.getElementById('ans_id').setText(ans[num-1]).setVisible(true);
+
+return app;
+}
 }
 
 function prev_fnc(e){
 var app=UiApp.getActiveApplication();
-var num=parseInt(e.parameter.num_name)-1;
-app.getElementById('num_id').setValue(num);
-refresh_fnc();
+var numshow=parseInt(e.parameter.numshow_name)-1;
+var num=numshow-1;
+gnum=numshow;
+btEnabled_fnc(e)
+
+app.getElementById('num_id').setValue(num).setVisible(false);
+app.getElementById('numshow_id').setValue(numshow);
 var select=load_selects[num].split("@@@");
 app.getElementById('ta_en_id').setText(load_en[num]);
 app.getElementById('radio1_id').setText(select[0]);
 app.getElementById('radio2_id').setText(select[1]);
 app.getElementById('radio3_id').setText(select[2]);
 app.getElementById('radio4_id').setText(select[3]);
+app.getElementById('label_id');
+if(numshow==lastrow){
+app.getElementById('ans_id').setVisible(false);
+}else{
+app.getElementById('ans_id').setText(ans[num]).setVisible(true);
+}
 clear_fnc(e);
+
+return app;
+}
+
+function numkeyup_fnc(e){
+var app=UiApp.getActiveApplication();
+try{
+var app=UiApp.getActiveApplication();
+var parameter = e.parameter;
+var keycode = parameter.keyCode;
+var numshow=parseInt(e.parameter.numshow_name);
+var num=numshow-1;
+
+if(numshow>lastrow){
+app.getElementById('num_id').setVisible(false);
+app.getElementById('numshow_id').setVisible(true);
+app.getElementById('ta_en_id').setText(nodata).setEnabled(false).setValue(false);
+app.getElementById('radio1_id').setText(nodata).setEnabled(false).setValue(false);
+app.getElementById('radio2_id').setText(nodata).setEnabled(false).setValue(false);
+app.getElementById('radio3_id').setText(nodata).setEnabled(false).setValue(false);
+app.getElementById('radio4_id').setText(nodata).setEnabled(false).setValue(false);
+app.getElementById('ans_id').setVisible(false);
+app.getElementById('next_id').setEnabled(false);
+app.getElementById('prev_id').setEnabled(false);
+
+return app;
+
+}else{
+
+btEnabled_fnc(e);
+
+app.getElementById('num_id').setValue(num);
+app.getElementById('numshow_id').setValue(numshow);
+var select=load_selects[num].split("@@@");
+app.getElementById('ta_en_id').setText(load_en[num]);
+app.getElementById('radio1_id').setText(select[0]);
+app.getElementById('radio2_id').setText(select[1]);
+app.getElementById('radio3_id').setText(select[2]);
+app.getElementById('radio4_id').setText(select[3]);
+app.getElementById('ans_id').setVisible(false);
+}
+clear_fnc(e);
+return app;
+  }catch(data){
+ }
+}
+
+function btEnabled_fnc(e){
+var app=UiApp.getActiveApplication();
+var parameter = e.parameter;
+var keycode = parameter.keyCode;
+var numshow=parseInt(e.parameter.numshow_name);
+var num=numshow-1;
+
+if(gnum==1){
+app.getElementById('prev_id').setEnabled(false);
+}else{
+app.getElementById('prev_id').setEnabled(true);
+}
+
+if(gnum==lastrow+1){
+app.getElementById('next_id').setEnabled(false);
+}else{
+app.getElementById('next_id').setEnabled(true);
+}
 return app;
 }
