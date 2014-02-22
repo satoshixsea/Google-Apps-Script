@@ -1,0 +1,23 @@
+ function myFunction() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication();
+  var panel=app.createVerticalPanel();
+  
+  var bt=app.createButton("Button");
+  
+  var bthandler=app.createServerClickHandler('bt_fnc').addCallbackElement(panel);
+  bt.addClickHandler(bthandler);
+  
+  panel.add(bt);
+  app.add(panel);
+  ss.show(app); 
+}
+
+function bt_fnc(){
+  var msg=Browser.msgBox("ボタンをクリックしてください。", Browser.Buttons.OK_CANCEL);
+  if(msg=="ok"){
+    Browser.msgBox("OKがクリックされました。");
+  }else{
+    Browser.msgBox("CANCELがクリックされました。");
+    }
+  }
