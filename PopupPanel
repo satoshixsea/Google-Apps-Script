@@ -1,0 +1,58 @@
+function myFunction() {
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication();
+  var panel=app.createVerticalPanel();
+
+  var pp = app.createPopupPanel().setId('pp_id').setVisible(false).setStyleAttribute("position", "absolute");
+  var panelVP=app.createVerticalPanel();
+  var panelHP=app.createHorizontalPanel();
+  
+  var confirm=app.createLabel("YES or NO?");
+  var ppOK=app.createButton("YES");
+  var ppNO=app.createButton("NO");
+
+  var bt=app.createButton("Button");
+  var la=app.createLabel("押されたボタンを表示します。").setId('la_id');
+
+  var bthandler=app.createServerClickHandler('bt_fnc').addCallbackElement(panel);
+  bt.addClickHandler(bthandler);
+
+  var ppOKhandler = app.createServerClickHandler("ppOK_fnc");
+  ppOK.addClickHandler(ppOKhandler);
+  
+  var ppNOhandler = app.createServerClickHandler("ppNO_fnc");
+  ppNO.addClickHandler(ppNOhandler);
+
+  panel.add(bt)
+       .add(la);
+
+  app.add(pp);
+  pp.add(panelVP);
+  panelVP.add(confirm);
+  panelVP.add(panelHP);
+  panelHP.add(ppOK)
+         .add(ppNO);  
+  
+  app.add(panel);
+  ss.show(app);
+}
+
+function bt_fnc(){
+  var app = UiApp.getActiveApplication();
+  var pp = app.getElementById("pp_id").setVisible(true);
+  return app;
+}
+
+function ppOK_fnc(){
+  var app = UiApp.getActiveApplication();
+  var pp = app.getElementById("pp_id").setVisible(false);
+  app.getElementById('la_id').setText("YESが押されました。");
+  return app;
+}
+
+function ppNO_fnc(){
+  var app = UiApp.getActiveApplication();
+  var pp = app.getElementById("pp_id").setVisible(false);
+  app.getElementById('la_id').setText("NOが押されました。");
+  return app;
+}
