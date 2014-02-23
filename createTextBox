@@ -1,27 +1,21 @@
 function myFunction() {
   var ss=SpreadsheetApp.getActiveSpreadsheet();
-  var app=UiApp.createApplication().setTitle("TextBox");
+  var app=UiApp.createApplication().setTitle("UiApp");
   var panel=app.createVerticalPanel();
 
   var textbox=app.createTextBox().setName('textbox_name');
-  
-  var button=app.createButton("BUTTON");
-  
-  var handler=app.createServerHandler('input_fnc')
-  handler.addCallbackElement(panel);
-  button.addClickHandler(handler);
+
+  var tbhandler=app.createServerHandler('input_fnc').addCallbackElement(panel);
+  textbox.addKeyUpHandler(tbhandler);
   
   panel.add(textbox);
-  panel.add(button);
   app.add(panel);
   ss.show(app);
 }
 
-
 function input_fnc(e){
   var ss=SpreadsheetApp.getActiveSpreadsheet();
   var app=UiApp.getActiveApplication();
-  var activecell=ss.getActiveCell();
-  
+  var activecell=ss.getActiveCell(); 
   activecell.setValue(e.parameter.textbox_name);
 }
