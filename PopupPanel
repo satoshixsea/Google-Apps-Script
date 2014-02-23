@@ -7,7 +7,7 @@ function myFunction() {
   var panelVP=app.createVerticalPanel();
   var panelHP=app.createHorizontalPanel();
   
-  var confirm=app.createLabel("OK or NO?");
+  var message=app.createLabel("OK or NO?");
   var ppOK=app.createButton("OK");
   var ppNO=app.createButton("NO");
 
@@ -28,7 +28,7 @@ function myFunction() {
 
   app.add(pp);
   pp.add(panelVP);
-  panelVP.add(confirm)
+  panelVP.add(message)
          .add(panelHP);
   panelHP.add(ppOK)
          .add(ppNO);  
