@@ -13,11 +13,10 @@ function myFunction() {
   ss.show(app);
 }
 
+
+
 function input_fnc(e){
   var ss=SpreadsheetApp.getActiveSpreadsheet();
   var app=UiApp.getActiveApplication();
-  var activecell=ss.getActiveCell(); 
-  activecell.setValue(e.parameter.textbox_name);
+  ss.getActiveCell().setValue(e.parameter.textbox_name);
 }
-
-
