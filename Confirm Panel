@@ -7,7 +7,7 @@ function myFunction() {
   var panelHP=app.createHorizontalPanel();
   
   var confirm=app.createLabel("どちらかクリックしてください。");
-  var btOK=app.createButton("YES");
+  var btOK=app.createButton("OK");
   var btNO=app.createButton("NO");
 
   var bt=app.createButton("Button");
@@ -26,8 +26,8 @@ function myFunction() {
        .add(la)
        .add(panelVP);
        
-  panelVP.add(confirm);
-  panelVP.add(panelHP);
+  panelVP.add(confirm)
+         .add(panelHP);
   panelHP.add(btOK)
          .add(btNO);  
   
@@ -44,7 +44,7 @@ function bt_fnc(){
 function btOK_fnc(){
   var app = UiApp.getActiveApplication();
   var pp = app.getElementById("panelVP_id").setVisible(false);
-  app.getElementById('la_id').setText("YESが押されました。");
+  app.getElementById('la_id').setText("OKが押されました。");
   return app;
 }
 
