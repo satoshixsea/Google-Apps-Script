@@ -1,0 +1,59 @@
+function doGet(){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication();
+  
+  var panel=app.createVerticalPanel();
+  
+  var dialog=app.createDialogBox().setVisible(false).setText("DialogBox").setId("dialog_id").setStyleAttribute("position", "absolute");
+  var panelV=app.createVerticalPanel();
+  var panelH=app.createHorizontalPanel();
+  
+  var bt=app.createButton("Button");
+  var la=app.createLabel("押されたボタンを表示します。").setId('la_id');
+  
+  var message=app.createLabel().setText("OKかNOを選択してください。");
+  var btOK=app.createButton("OK");
+  var btNO=app.createButton("NO");
+  
+  var bthandler=app.createServerClickHandler('bt_fnc').addCallbackElement(panel);
+  bt.addClickHandler(bthandler);    
+  
+  var btOKhander=app.createServerClickHandler("btOK_fnc").addCallbackElement(panel);
+  btOK.addClickHandler(btOKhander);
+  
+  var btNOhander=app.createServerClickHandler("btNO_fnc").addCallbackElement(panel);
+  btNO.addClickHandler(btNOhander);
+  
+  panel.add(bt)
+       .add(la);
+       
+  panelV.add(message)
+        .add(panelH)
+  panelH.add(btOK)
+        .add(btNO);
+  dialog.add(panelV);
+  
+  app.add(panel)
+     .add(dialog);
+  ss.show(app);
+}
+
+function bt_fnc(){
+  var app = UiApp.getActiveApplication();
+  var pp = app.getElementById("dialog_id").setVisible(true);
+  return app;
+}
+
+function btOK_fnc(){
+  var app=UiApp.getActiveApplication();
+  app.getElementById('la_id').setText("OKが押されました。")
+  var dialog=app.getElementById("dialog_id").setVisible(false);
+  return app;
+}
+
+function btNO_fnc(){
+  var app=UiApp.getActiveApplication();
+  app.getElementById('la_id').setText("NOが押されました。")
+  var dialog=app.getElementById("dialog_id").setVisible(false);
+  return app;
+}
