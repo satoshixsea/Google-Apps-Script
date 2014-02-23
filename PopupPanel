@@ -7,8 +7,8 @@ function myFunction() {
   var panelVP=app.createVerticalPanel();
   var panelHP=app.createHorizontalPanel();
   
-  var confirm=app.createLabel("YES or NO?");
-  var ppOK=app.createButton("YES");
+  var confirm=app.createLabel("OK or NO?");
+  var ppOK=app.createButton("OK");
   var ppNO=app.createButton("NO");
 
   var bt=app.createButton("Button");
@@ -28,8 +28,8 @@ function myFunction() {
 
   app.add(pp);
   pp.add(panelVP);
-  panelVP.add(confirm);
-  panelVP.add(panelHP);
+  panelVP.add(confirm)
+         .add(panelHP);
   panelHP.add(ppOK)
          .add(ppNO);  
   
@@ -46,7 +46,7 @@ function bt_fnc(){
 function ppOK_fnc(){
   var app = UiApp.getActiveApplication();
   var pp = app.getElementById("pp_id").setVisible(false);
-  app.getElementById('la_id').setText("YESが押されました。");
+  app.getElementById('la_id').setText("OKが押されました。");
   return app;
 }
 
