@@ -1,0 +1,64 @@
+function myFunction(){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.createApplication()
+               .setTitle("TextArea")
+               .setWidth(300).setHeight(300);
+  var panel=app.createVerticalPanel();
+  
+  var fontsize='16pt';
+  
+  var ta=app.createTextArea()
+            .setWidth(300).setHeight(300)
+            .setId('ta_id').setName('ta_name')
+            .setStyleAttribute('font-size',fontsize);
+  var dialog=app.createDialogBox()
+                .setVisible(false)
+                .setText("すでにデータが入力されています。")
+                .setId('dialog_id')
+                .setStyleAttribute('position', 'absolute');
+  var bt=app.createButton("OK")
+            .setWidth(50).setHeight(30);
+  
+  ta.addKeyUpHandler(app.createServerHandler('ta_fnc').addCallbackElement(panel));
+  bt.addClickHandler(app.createServerHandler('bt_fnc').addCallbackElement(panel));
+  
+  dialog.add(bt);
+  panel.add(ta);
+  app.add(panel)
+     .add(dialog);
+  ss.show(app);
+  }
+
+
+function ta_fnc(e){
+  var ss=SpreadsheetApp.getActiveSpreadsheet();
+  var app=UiApp.getActiveApplication();
+  var sh=ss.getActiveSheet();
+  var range=ss.getActiveRange();
+  var row=range.getRow();
+  var column=range.getColumn();
+  
+  var keycode = e.parameter.keyCode;  
+  
+  if(keycode==13){
+  var value=e.parameter.ta_name;
+  var sentence=value.split("\n");
+  if(sentence[sentence.length-2]==""){
+  app.getElementById('ta_id').setValue("");
+  sh.getRange(row,1).setValue(value.replace("\n\n",""));
+  sh.getRange(row+1 , column).activate();
+  }
+  }
+  
+  if(range.getValue()!=""){
+  app.getElementById('dialog_id').setVisible(true);
+  }    
+  return app;
+}
+
+
+function bt_fnc(){
+  var app=UiApp.getActiveApplication();
+  app.getElementById('dialog_id').setVisible(false);
+  return app;
+}
