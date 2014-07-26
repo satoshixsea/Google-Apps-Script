@@ -295,7 +295,7 @@ app.getElementById(id).setVisible(false);
 
 path=e.parameter.textbox1_name;
 value=newsort1.split("\n");
-value2=(e.parameter.textbox2_name)+" ";
+value2=" "+(e.parameter.textbox2_name);
 value3=(e.parameter.textbox3_name);
 setdata_fnc(e);
 return app;
