@@ -134,7 +134,7 @@ app.getElementById(id).setVisible(false);
 
 path=e.parameter.textbox1_name;
 value=(e.parameter.textarea1_name).split("\n");
-value2=(e.parameter.textbox2_name)+" ";
+value2=" "+(e.parameter.textbox2_name);
 value3=(e.parameter.textbox3_name);
 setdata_fnc(e);
 
@@ -163,7 +163,7 @@ return app;
 function googleradio2_fnc(e){
 var app=UiApp.getActiveApplication();
 value=(e.parameter.textarea1_name).split("\n");
-value2=(e.parameter.textbox2_name)+" ";
+value2=" "+(e.parameter.textbox2_name);
 
 var judge=(e.parameter.checkbox1_name);
 if(judge=="true"){
@@ -236,7 +236,7 @@ value2="";
 for(i=0;i<value.length;i++){
 var id="anchor"+i+"_id";
 app.getElementById(id).setText((i+num)+"._"+value[i])
-                      .setHref(path+value2+value[i]+value3)
+                      .setHref(path+value[i]+value2+value3)
                       .setVisible(true);
 }
 }
@@ -265,7 +265,7 @@ app.getElementById(id).setVisible(false);
 
 path=e.parameter.textbox1_name;
 value=newsort1.split("\n");
-value2=(e.parameter.textbox2_name)+" ";
+value2=" "+(e.parameter.textbox2_name);
 value3=(e.parameter.textbox3_name);
 setdata_fnc(e);
 
